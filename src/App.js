@@ -1,26 +1,58 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import TotalSearchInfoCompoent from './component/TotalSearchResult';
+import styled from 'styled-components';
+import SearchInput from './component/SearchComponent';
+import { searchRes } from './api/reqApi';
+import { of, from } from 'rxjs';
+import { pluck, mapTo, filter, map, switchMap, tap } from 'rxjs/operators';
+
+const AppLayout = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+`;
+
+const makeSearchObj = (query) => {
+    return {
+        query: {
+            match: {
+                title: {
+                    query,
+                },
+            },
+        },
+    };
+};
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [searchResult, setsearchResult] = useState([]);
+
+    const submit = (e, value) => {
+        of(e)
+            .pipe(
+                filter((e) => e.keyCode === 13),
+                mapTo(value),
+                switchMap((query) => {
+                    console.log(query);
+                    return from(searchRes(makeSearchObj(query))).pipe(
+                        pluck('data'),
+                        map(({ hits }) => hits.hits)
+                    );
+                }),
+                tap(console.log)
+            )
+            .subscribe(setsearchResult);
+    };
+
+    return (
+        <AppLayout>
+            <SearchInput submit={submit} />
+            <TotalSearchInfoCompoent searchResult={searchResult} />;
+        </AppLayout>
+    );
 }
 
 export default App;
