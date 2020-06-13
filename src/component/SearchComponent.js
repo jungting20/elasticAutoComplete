@@ -12,6 +12,7 @@ import {
     tap,
     mergeMap,
     toArray,
+    distinctUntilChanged,
 } from 'rxjs/operators';
 import { searchRes } from '../api/reqApi';
 const SerachInputBlock = styled.div`
@@ -49,9 +50,9 @@ const SearchInput = ({ submit }) => {
         of(e.persist())
             .pipe(
                 debounceTime(500),
+                distinctUntilChanged(),
                 mapTo(inputValue),
                 switchMap((query) => {
-                    console.log(query);
                     return from(searchRes(makeautoCompletequery(query))).pipe(
                         pluck('data'),
                         map(({ hits }) => hits.hits)
@@ -73,7 +74,11 @@ const SearchInput = ({ submit }) => {
                 getOptionLabel={(option) => option.title}
                 style={{ width: 300 }}
                 renderInput={(params) => (
-                    <TextField {...params} variant="outlined" />
+                    <TextField
+                        {...params}
+                        variant="outlined"
+                        label="검색어를 입력해주세요"
+                    />
                 )}
                 onInputChange={(event, newInputValue) => {
                     setInputValue(newInputValue);

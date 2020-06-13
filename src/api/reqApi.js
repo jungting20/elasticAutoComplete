@@ -28,7 +28,6 @@ const instance = axios.create({
 });
 
 export const searchRes = (query) => {
-    console.log('요청은하니');
     return instance.post('/_search?pretty=true', query, {
         auth: {
             username: 'theqoos',
