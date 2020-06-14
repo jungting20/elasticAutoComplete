@@ -4,9 +4,19 @@ import TotalSearchInfoCompoent from './component/TotalSearchResult';
 import styled from 'styled-components';
 import SearchInput from './component/SearchComponent';
 import { searchRes } from './api/reqApi';
-import { of, from } from 'rxjs';
-import { pluck, mapTo, filter, map, switchMap, tap } from 'rxjs/operators';
-
+import { of, from, forkJoin } from 'rxjs';
+import {
+    pluck,
+    mapTo,
+    filter,
+    map,
+    switchMap,
+    tap,
+    delayWhen,
+    mergeMap,
+    catchError,
+} from 'rxjs/operators';
+import { popularGetSearchRes, popularinsertSearchRes } from './api/reqApi';
 const AppLayout = styled.div`
     display: flex;
     flex-direction: column;
@@ -27,30 +37,123 @@ const makeSearchObj = (query) => {
     };
 };
 
+const makeSearchObjReal = (query) => {
+    return {
+        query: {
+            bool: {
+                should: [
+                    {
+                        bool: {
+                            should: [
+                                {
+                                    match: {
+                                        title: {
+                                            query,
+                                            analyzer: 'standard',
+                                        },
+                                    },
+                                },
+                            ],
+                            filter: [
+                                {
+                                    term: {
+                                        _index: 'docs',
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        bool: {
+                            must: [
+                                {
+                                    match: {
+                                        name: {
+                                            query,
+                                            boost: 10,
+                                        },
+                                    },
+                                },
+                            ],
+                            filter: [
+                                {
+                                    term: {
+                                        _index: 'artists',
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    };
+};
+
+const partition = (keyfn, array) => {
+    return array.reduce(
+        (a, b) => {
+            if (keyfn(b)) {
+                a[0].push(b);
+            } else {
+                a[1].push(b);
+            }
+            return a;
+        },
+        [[], []]
+    );
+};
+//aggregations,group_by_state,buckets
 function App() {
+    //popularGetSearchRes().then(console.log);
     const [searchResult, setsearchResult] = useState([]);
+    const [popularWordList, setpopularWordList] = useState([]);
 
     const submit = (e, value) => {
-        of(e)
-            .pipe(
+        forkJoin(
+            of(e).pipe(
                 filter((e) => e.keyCode === 13),
                 mapTo(value),
                 switchMap((query) => {
-                    console.log(query);
-                    return from(searchRes(makeSearchObj(query))).pipe(
+                    return from(searchRes(makeSearchObjReal(query))).pipe(
                         pluck('data'),
-                        map(({ hits }) => hits.hits)
+                        map(({ hits }) => hits.hits),
+                        map((a) => partition((b) => b._index === 'artists', a))
                     );
-                }),
-                tap(console.log)
+                })
+            ),
+            of(e).pipe(
+                filter((e) => e.keyCode === 13),
+                mapTo(value),
+                /* delayWhen((query) =>
+                    from(popularinsertSearchRes(query)).pipe(
+                        catchError((error) => {
+                            console.log('에러가나버렸쥬');
+                            return of('error');
+                        })
+                    )
+                ), */
+                mergeMap((query) =>
+                    from(popularGetSearchRes()).pipe(
+                        pluck('data'),
+                        map((obj) => obj.aggregations.group_by_state.buckets)
+                    )
+                )
             )
-            .subscribe(setsearchResult);
+        ).subscribe(([searchresult, wordlist]) => {
+            setsearchResult(searchresult);
+            setpopularWordList(wordlist);
+        });
     };
 
     return (
         <AppLayout>
             <SearchInput submit={submit} />
-            <TotalSearchInfoCompoent searchResult={searchResult} />;
+            <TotalSearchInfoCompoent
+                searchResult={searchResult}
+                popularWordList={popularWordList}
+            />
+            ;
         </AppLayout>
     );
 }

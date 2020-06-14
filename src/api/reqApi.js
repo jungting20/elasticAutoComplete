@@ -23,7 +23,7 @@ export const res = axios.get(
 
 const instance = axios.create({
     baseURL:
-        'https://search-testdomain-ishym4337emgkq75ryklxvupt4.us-west-2.es.amazonaws.com/docs',
+        'https://search-testdomain-ishym4337emgkq75ryklxvupt4.us-west-2.es.amazonaws.com',
     headers: { 'Content-Type': 'application/json' },
 });
 
@@ -34,4 +34,40 @@ export const searchRes = (query) => {
             password: '!5rk=Tqoos',
         },
     });
+};
+
+export const popularinsertSearchRes = (query) => {
+    return instance.post(
+        '/search_keyword',
+        {
+            search_keyword: query,
+        },
+        {
+            auth: {
+                username: 'theqoos',
+                password: '!5rk=Tqoos',
+            },
+        }
+    );
+};
+export const popularGetSearchRes = () => {
+    return instance.post(
+        '/search_keyword/_search?pretty=true',
+        {
+            size: 0,
+            aggs: {
+                group_by_state: {
+                    terms: {
+                        field: 'search_keyword',
+                    },
+                },
+            },
+        },
+        {
+            auth: {
+                username: 'theqoos',
+                password: '!5rk=Tqoos',
+            },
+        }
+    );
 };

@@ -48,78 +48,110 @@ const PopularSearchWordUl = styled.ul`
         font-size: 20px;
     }
 `;
+
+const TotalArtistInfoBlock = styled.div`
+    display: flex;
+    flex-direction: column;
+`;
+
+const ArtistsInfoBlock = styled.div`
+    display: flex;
+    margin-bottom: 30px;
+    .album-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-left: 10px;
+    }
+`;
+
+const ArtistsInfoComponent = ({
+    info: {
+        _source: { album, main_img, name, type },
+    },
+}) => {
+    return (
+        <ArtistsInfoBlock>
+            <div>
+                <p>인물정보</p>
+                <figure>
+                    <img src={main_img} />
+                    <figcaption>{name}</figcaption>
+                </figure>
+            </div>
+            <div className="album-info">
+                <p>앨범이름</p>
+                <p>{album}</p>
+            </div>
+        </ArtistsInfoBlock>
+    );
+};
+//album,main_img,name,type
+
 //main_img, title, artists, cp, create_ts, hashtag
 const SearchResult = ({ searchResult }) => {
+    const [artists, docs] = searchResult;
+
     return (
-        <SearchResultUl>
-            {searchResult.map(
-                (
-                    {
-                        _source: {
-                            main_img,
-                            title,
-                            artists,
-                            cp,
-                            create_ts,
-                            hashtag,
-                        },
-                    },
-                    index
-                ) => {
-                    const { url, width, height } = JSON.parse(main_img);
-                    return (
-                        <li key={index}>
-                            <img src={url} />
-                            <div className="infomation">
-                                <p>{title}</p>
-                                <div className="sub-infomation">
-                                    <span>{`${artists}    ,`}</span>
-                                    <span>{`${cp}   ,`}</span>
-                                    <span>{`${create_ts}    ,`}</span>
-                                </div>
-                            </div>
-                        </li>
-                    );
-                }
-            )}
-        </SearchResultUl>
+        <TotalArtistInfoBlock>
+            {artists &&
+                artists.map((a, index) => (
+                    <ArtistsInfoComponent info={a} key={index} />
+                ))}
+            <SearchResultUl>
+                {docs &&
+                    docs.map(
+                        (
+                            {
+                                _source: {
+                                    main_img,
+                                    title,
+                                    artists,
+                                    cp,
+                                    create_ts,
+                                    hashtag,
+                                },
+                            },
+                            index
+                        ) => {
+                            const { url, width, height } = JSON.parse(main_img);
+                            return (
+                                <li key={index}>
+                                    <img src={url} />
+                                    <div className="infomation">
+                                        <p>{title}</p>
+                                        <div className="sub-infomation">
+                                            <span>{`${artists}    ,`}</span>
+                                            <span>{`${cp}   ,`}</span>
+                                            <span>{`${create_ts}    ,`}</span>
+                                        </div>
+                                    </div>
+                                </li>
+                            );
+                        }
+                    )}
+            </SearchResultUl>
+        </TotalArtistInfoBlock>
     );
 };
 
-const PopularSearchComponent = () => {
+const PopularSearchComponent = ({ popularWordList }) => {
     return (
         <PopularSearchWordUl>
             <li>인기검색어</li>
-            <li>
-                <em>1</em> 딱쿠스
-            </li>
-            <li>
-                <em>2</em> 황정호
-            </li>
-            <li>
-                <em>3</em> 방탈출 탈슈
-            </li>
-            <li>
-                <em>4</em> 방탈출 탈슈
-            </li>
-            <li>
-                <em>5</em> 방탈출 탈슈
-            </li>
-            <li>
-                <em>6</em> 방탈출 탈슈
-            </li>
-            <li>
-                <em>7</em> 방탈출 탈슈
-            </li>
+            {popularWordList &&
+                popularWordList.map((a, index) => (
+                    <li key={index}>{`${index + 1}.  ${a.key}`}</li>
+                ))}
         </PopularSearchWordUl>
     );
 };
 
-const TotalSearchInfoCompoent = ({ searchResult }) => {
+const TotalSearchInfoCompoent = ({ searchResult, popularWordList }) => {
     return (
         <TotalSearchInfoBlock>
             <SearchResult searchResult={searchResult} />
-            <PopularSearchComponent />
+            <PopularSearchComponent popularWordList={popularWordList} />
         </TotalSearchInfoBlock>
     );
 };
