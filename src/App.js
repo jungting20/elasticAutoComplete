@@ -125,14 +125,13 @@ function App() {
             of(e).pipe(
                 filter((e) => e.keyCode === 13),
                 mapTo(value),
-                /* delayWhen((query) =>
+                delayWhen((query) =>
                     from(popularinsertSearchRes(query)).pipe(
                         catchError((error) => {
-                            console.log('에러가나버렸쥬');
                             return of('error');
                         })
                     )
-                ), */
+                ),
                 mergeMap((query) =>
                     from(popularGetSearchRes()).pipe(
                         pluck('data'),

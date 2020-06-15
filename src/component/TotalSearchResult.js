@@ -67,7 +67,7 @@ const ArtistsInfoBlock = styled.div`
 
 const ArtistsInfoComponent = ({
     info: {
-        _source: { album, main_img, name, type },
+        _source: { album, main_img, name, type, profile_img },
     },
 }) => {
     return (
@@ -75,13 +75,16 @@ const ArtistsInfoComponent = ({
             <div>
                 <p>인물정보</p>
                 <figure>
-                    <img src={main_img} />
+                    <img src={profile_img} />
                     <figcaption>{name}</figcaption>
                 </figure>
             </div>
             <div className="album-info">
-                <p>앨범이름</p>
-                <p>{album}</p>
+                <p>앨범정보</p>
+                <figure>
+                    <img src={main_img} />
+                    <figcaption>{album}</figcaption>
+                </figure>
             </div>
         </ArtistsInfoBlock>
     );
