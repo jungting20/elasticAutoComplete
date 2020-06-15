@@ -38,7 +38,7 @@ export const searchRes = (query) => {
 
 export const popularinsertSearchRes = (query) => {
     return instance.post(
-        '/search_keyword',
+        '/search_keyword/_doc',
         {
             search_keyword: query,
         },
