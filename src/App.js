@@ -24,19 +24,7 @@ const AppLayout = styled.div`
     align-items: center;
     height: 100vh;
 `;
-
-const makeSearchObj = (query) => {
-    return {
-        query: {
-            match: {
-                title: {
-                    query,
-                },
-            },
-        },
-    };
-};
-
+/* 
 const makeSearchObjReal = (query) => {
     return {
         query: {
@@ -88,8 +76,62 @@ const makeSearchObjReal = (query) => {
             },
         },
     };
-};
+}; */
 
+const makeSearchObjReal = (query) => {
+    return {
+        query: {
+            bool: {
+                should: [
+                    {
+                        bool: {
+                            should: [
+                                {
+                                    multi_match: {
+                                        query,
+                                        fields: [
+                                            'title^3',
+                                            'contents^2',
+                                            'artists',
+                                        ],
+                                    },
+                                },
+                            ],
+                            filter: [
+                                {
+                                    term: {
+                                        _index: 'docs',
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                    {
+                        bool: {
+                            must: [
+                                {
+                                    match: {
+                                        name: {
+                                            query,
+                                            boost: 20,
+                                        },
+                                    },
+                                },
+                            ],
+                            filter: [
+                                {
+                                    term: {
+                                        _index: 'artists',
+                                    },
+                                },
+                            ],
+                        },
+                    },
+                ],
+            },
+        },
+    };
+};
 const partition = (keyfn, array) => {
     return array.reduce(
         (a, b) => {
@@ -105,7 +147,6 @@ const partition = (keyfn, array) => {
 };
 //aggregations,group_by_state,buckets
 function App() {
-    //popularGetSearchRes().then(console.log);
     const [searchResult, setsearchResult] = useState([]);
     const [popularWordList, setpopularWordList] = useState([]);
 
