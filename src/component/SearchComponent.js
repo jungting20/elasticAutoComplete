@@ -94,7 +94,11 @@ const SearchInput = ({ submit }) => {
                     //from(a).pipe(mergeMap((b) => b.highlight.title))
                     from(a).pipe(
                         map((b) => b._source.search_keyword),
-                        distinctUntilChanged()
+                        distinctUntilChanged(
+                            (a, b) =>
+                                a.replace(/\s+/gi, '') ===
+                                b.replace(/\s+/gi, '')
+                        )
                     )
                 ),
                 map((title) => {
