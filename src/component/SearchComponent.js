@@ -36,7 +36,7 @@ const SerachInputBlock = styled.div`
     flex-direction: column;
     align-items: center;
 `; */
-const makeautoCompletequery = (query) => ({
+export const makeautoCompletequery = (query) => ({
     query: {
         match: {
             title: query,
@@ -57,14 +57,14 @@ const SearchInput = ({ submit }) => {
         submit(e, inputValue);
     };
 
-    const change = (e) => {
+    const change = (e, newInputValue) => {
         of(e)
             //of(e.persist())
             .pipe(
-                tap((e) => setInputValue(e.target.value)),
+                tap((e) => setInputValue(newInputValue)),
                 debounceTime(500),
                 distinctUntilChanged(),
-                mapTo(inputValue),
+                mapTo(newInputValue),
                 switchMap((query) => {
                     return from(searchRes(makeautoCompletequery(query))).pipe(
                         pluck('data'),
@@ -98,12 +98,13 @@ const SearchInput = ({ submit }) => {
                         label="검색어를 입력해주세요"
                     />
                 )}
-                onInputChange={(event, newInputValue) => {
+                /* onInputChange={(event, newInputValue) => {
                     setInputValue(newInputValue);
-                }}
+                }} */
+                onInputChange={change}
                 inputValue={inputValue}
                 onKeyUp={keyup}
-                onKeyDown={change}
+                /* onKeyDown={change} */
                 renderOption={(option, { inputValue }) => {
                     const matches = match(option.title, inputValue);
                     const parts = parse(option.title, matches);

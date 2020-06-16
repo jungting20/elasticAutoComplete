@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import './App.css';
 import TotalSearchInfoCompoent from './component/TotalSearchResult';
 import styled from 'styled-components';
-import SearchInput from './component/SearchComponent';
+import SearchInput, {
+    makeautoCompletequery,
+} from './component/SearchComponent';
 import { searchRes } from './api/reqApi';
 import { of, from, forkJoin } from 'rxjs';
 import {
