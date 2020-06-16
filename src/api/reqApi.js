@@ -35,6 +35,14 @@ export const searchRes = (query) => {
         },
     });
 };
+export const autocomplete = (query) => {
+    return instance.post('/search_keyword/_search?pretty=true', query, {
+        auth: {
+            username: 'theqoos',
+            password: '!5rk=Tqoos',
+        },
+    });
+};
 
 export const popularinsertSearchRes = (query) => {
     return instance.post(
@@ -58,7 +66,7 @@ export const popularGetSearchRes = () => {
             aggs: {
                 group_by_state: {
                     terms: {
-                        field: 'search_keyword',
+                        field: 'search_keyword.keyword',
                     },
                 },
             },

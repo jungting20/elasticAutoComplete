@@ -14,7 +14,7 @@ import {
     toArray,
     distinctUntilChanged,
 } from 'rxjs/operators';
-import { searchRes } from '../api/reqApi';
+import { searchRes, autocomplete } from '../api/reqApi';
 
 import CustomAutoComplete from './CustomAutoComplete';
 import UseAutocomplete from './CustomAutoComplete';
@@ -36,8 +36,8 @@ const SerachInputBlock = styled.div`
     flex-direction: column;
     align-items: center;
 `; */
-export const makeautoCompletequery = (query) => ({
-    query: {
+export const makeautoCompletequery = (query) => {
+    /* query: {
         match: {
             title: query,
         },
@@ -46,8 +46,25 @@ export const makeautoCompletequery = (query) => ({
         fields: {
             title: {},
         },
-    },
-});
+    }, */
+    return {
+        query: {
+            match: {
+                search_keyword: {
+                    query,
+                },
+            },
+        },
+        highlight: {
+            number_of_fragments: 3,
+            fragment_size: 150,
+            fields: {
+                search_keyword: {},
+                name: {},
+            },
+        },
+    };
+};
 
 const SearchInput = ({ submit }) => {
     const [option, setoption] = useState([]);
@@ -66,13 +83,19 @@ const SearchInput = ({ submit }) => {
                 distinctUntilChanged(),
                 mapTo(newInputValue),
                 switchMap((query) => {
-                    return from(searchRes(makeautoCompletequery(query))).pipe(
+                    return from(
+                        autocomplete(makeautoCompletequery(query))
+                    ).pipe(
                         pluck('data'),
                         map(({ hits }) => hits.hits)
                     );
                 }),
                 mergeMap((a) =>
-                    from(a).pipe(mergeMap((b) => b.highlight.title))
+                    //from(a).pipe(mergeMap((b) => b.highlight.title))
+                    from(a).pipe(
+                        map((b) => b._source.search_keyword),
+                        distinctUntilChanged()
+                    )
                 ),
                 map((title) => {
                     return {

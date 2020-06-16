@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import SearchInput, {
     makeautoCompletequery,
 } from './component/SearchComponent';
-import { searchRes } from './api/reqApi';
+import { searchRes, autocomplete } from './api/reqApi';
 import { of, from, forkJoin } from 'rxjs';
 import {
     pluck,
@@ -149,6 +149,8 @@ const partition = (keyfn, array) => {
 };
 //aggregations,group_by_state,buckets
 function App() {
+    //searchRes('blackpink').then(console.log);
+    //autocomplete(makeautoCompletequery('bla')).then(console.log);
     const [searchResult, setsearchResult] = useState([]);
     const [popularWordList, setpopularWordList] = useState([]);
 
