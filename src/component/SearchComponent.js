@@ -80,8 +80,8 @@ const SearchInput = ({ submit }) => {
             .pipe(
                 tap((e) => setInputValue(newInputValue)),
                 debounceTime(500),
-                distinctUntilChanged(),
                 mapTo(newInputValue),
+                distinctUntilChanged(),
                 switchMap((query) => {
                     return from(
                         autocomplete(makeautoCompletequery(query))
