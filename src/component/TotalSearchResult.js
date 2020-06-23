@@ -38,16 +38,6 @@ const SearchResultUl = styled.ul`
         font-size: 10px;
     }
 `;
-const PopularSearchWordUl = styled.ul`
-    li:nth-child(1) {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 10px;
-    }
-    li {
-        font-size: 20px;
-    }
-`;
 
 const TotalArtistInfoBlock = styled.div`
     display: flex;
@@ -57,6 +47,7 @@ const TotalArtistInfoBlock = styled.div`
 const ArtistsInfoBlock = styled.div`
     display: flex;
     margin-bottom: 30px;
+    flex-direction: column;
     .album-info {
         display: flex;
         flex-direction: column;
@@ -138,23 +129,10 @@ const SearchResult = ({ searchResult }) => {
     );
 };
 
-const PopularSearchComponent = ({ popularWordList }) => {
-    return (
-        <PopularSearchWordUl>
-            <li>인기검색어</li>
-            {popularWordList &&
-                popularWordList.map((a, index) => (
-                    <li key={index}>{`${index + 1}.  ${a.key}`}</li>
-                ))}
-        </PopularSearchWordUl>
-    );
-};
-
-const TotalSearchInfoCompoent = ({ searchResult, popularWordList }) => {
+const TotalSearchInfoCompoent = ({ searchResult }) => {
     return (
         <TotalSearchInfoBlock>
             <SearchResult searchResult={searchResult} />
-            <PopularSearchComponent popularWordList={popularWordList} />
         </TotalSearchInfoBlock>
     );
 };
