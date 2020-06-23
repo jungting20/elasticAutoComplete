@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 const FocusBlock = styled.div`
     width: 100%;
+    height: 50vh;
     margin-top: 70px;
     display: flex;
     flex-direction: column;
@@ -85,7 +86,7 @@ user: */
                 {challengeList &&
                     challengeList.map(({ _source }, i) => {
                         return (
-                            <div>
+                            <div key={i}>
                                 <h1>{_source.title}</h1>
                                 <p>{_source.contents}</p>
                                 <p className="tags">

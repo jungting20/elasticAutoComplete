@@ -9,7 +9,7 @@ const PopularSearchWordUl = styled.ul`
         margin-bottom: 10px;
     }
     li {
-        font-size: 20px;
+        font-size: 0.8rem;
     }
 `;
 
