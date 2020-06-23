@@ -29,6 +29,9 @@ const RecommendArtistsBlock = styled.ul`
 const HashTagBlock = styled.ul`
     display: flex;
     margin-top: 30px;
+    li {
+        font-size: 0.8rem;
+    }
 `;
 
 const ChallengeBlock = styled.ul`
@@ -78,9 +81,7 @@ user: */
             </RecommendArtistsBlock>
             <HashTagBlock>
                 {hashtagList &&
-                    hashtagList.map((a, i) => (
-                        <li key={i}>{`  #${a.key}  ,`}</li>
-                    ))}
+                    hashtagList.map((a, i) => <li key={i}>{`#${a.key},`}</li>)}
             </HashTagBlock>
             <ChallengeBlock>
                 {challengeList &&
