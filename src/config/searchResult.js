@@ -1,9 +1,8 @@
 import { from, of } from 'rxjs';
 import instance from '../api/reqApi';
-import { catchError, map, pluck } from 'rxjs/operators';
-
+import { catchError, map, pluck, mergeMap, toArray } from 'rxjs/operators';
 const searchRes = (query) => {
-    return instance.post('/_search?pretty=true', query);
+    return instance.post('/_msearch/template?pretty=true', query);
 };
 
 const popularinsertSearchRes = (query) => {
@@ -37,60 +36,10 @@ const partition = (keyfn, array) => {
     );
 };
 
-const makeSearchObjReal = (query) => {
-    return {
-        query: {
-            bool: {
-                should: [
-                    {
-                        bool: {
-                            should: [
-                                {
-                                    multi_match: {
-                                        query,
-                                        fields: [
-                                            'title^3',
-                                            'contents^2',
-                                            'artists',
-                                        ],
-                                    },
-                                },
-                            ],
-                            filter: [
-                                {
-                                    term: {
-                                        _index: 'docs',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        bool: {
-                            must: [
-                                {
-                                    match: {
-                                        name: {
-                                            query,
-                                            boost: 20,
-                                        },
-                                    },
-                                },
-                            ],
-                            filter: [
-                                {
-                                    term: {
-                                        _index: 'artists',
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        },
-    };
-};
+const flatten = (array) => array.reduce((a, b) => a.concat(...b), []);
+
+const makeSearchTemplate = (query) =>
+    `{"index" : "artists"}\n{"id": "artist_search_template", "params": {"artist_name": "${query}"}}\n{"index" : "community"}\n{"id": "challenge_search_template", "params": {"community_query": "${query}"}}\n{"index" : "community"}\n{"id": "quiz_search_template", "params": {"community_query": "${query}"}}\n{"index" : "community"}\n{"id": "poll_search_template", "params": {"community_query": "${query}"}}\n{"index" : "community"}\n{"id": "post_search_template", "params": {"community_query": "${query}"}}\n{"index" : "docs"}\n{"id": "docs_search_template", "params": {"docs_query": "${query}"}}\n\n`;
 
 export const popularSearchRes$ = from(popularGetSearchRes()).pipe(
     pluck('data'),
@@ -106,9 +55,11 @@ export const insertpoplarSearchRes$ = (query) =>
     );
 
 export const getSearchResult$ = (query) => {
-    return from(searchRes(makeSearchObjReal(query))).pipe(
-        pluck('data'),
-        map(({ hits }) => hits.hits),
+    return from(searchRes(makeSearchTemplate(query))).pipe(
+        map((a) => a.data.responses),
+        mergeMap((a) => from(a).pipe(map(({ hits }) => hits.hits))),
+        toArray(),
+        map(flatten),
         map((a) => partition((b) => b._index === 'artists', a))
     );
 };

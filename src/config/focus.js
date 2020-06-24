@@ -3,41 +3,18 @@ import instance from '../api/reqApi';
 import { catchError, map, pluck, tap } from 'rxjs/operators';
 
 const getrecommendArtits = () => {
-    return instance.post('/artists/_search?pretty=true', {
-        size: 4,
-        query: {
-            match_all: {},
-        },
+    return instance.post('/artists/_search/template?pretty=true', {
+        id: 'artist_template',
     });
 };
 const gethashtag = () => {
-    return instance.post('/community/_search?pretty=true', {
-        size: 0,
-        query: {
-            match_all: {},
-        },
-        aggs: {
-            popular_hashtag: {
-                terms: {
-                    field: 'hashtag',
-                },
-            },
-        },
+    return instance.post('/community/_search/template?pretty=true', {
+        id: 'hashtag_template',
     });
 };
 const getchallenge = () => {
-    return instance.post('/community/_search?pretty=true', {
-        size: 4,
-        sort: {
-            create_ts: 'desc',
-        },
-        query: {
-            match: {
-                type: {
-                    query: 'challenge',
-                },
-            },
-        },
+    return instance.post('/community/_search/template?pretty=true', {
+        id: 'challenge_template',
     });
 };
 export const getrecommendArtits$ = () =>
