@@ -52,6 +52,17 @@ const ChallengeBlock = styled.ul`
     .tags {
         font-size: 0.8rem;
     }
+    .contents {
+        max-width: 768px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* 라인수 */
+        -webkit-box-orient: vertical;
+        word-wrap: break-word;
+        line-height: 1.2em;
+        height: 3.6em;
+    }
 `;
 
 const FocusComponent = ({ focusItem }) => {
@@ -89,7 +100,7 @@ user: */
                         return (
                             <div key={i}>
                                 <h1>{_source.title}</h1>
-                                <p>{_source.contents}</p>
+                                <p className="contents">{_source.contents}</p>
                                 <p className="tags">
                                     {_source.hashtag
                                         .split(',')

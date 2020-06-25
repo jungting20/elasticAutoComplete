@@ -14,7 +14,6 @@ const SearchResultUl = styled.ul`
     display: flex;
     flex-direction: column;
     width: 50vw;
-
     li {
         display: flex;
         margin-bottom: 19px;
