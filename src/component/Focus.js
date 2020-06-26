@@ -39,14 +39,23 @@ const ChallengeBlock = styled.ul`
     flex-direction: column;
     padding: 1rem;
     margin-top: 30px;
-    div {
+    width: 80vw;
+    /* div {
         margin-top: 30px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-    }
+    } */
     h1 {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* 라인수 */
+        -webkit-box-orient: vertical;
+        word-wrap: break-word;
+        line-height: 1.2em;
+        height: 3.6em;
     }
 
     .tags {
@@ -62,6 +71,25 @@ const ChallengeBlock = styled.ul`
         word-wrap: break-word;
         line-height: 1.2em;
         height: 3.6em;
+    }
+    .community-block {
+        display: flex;
+        flex-direction: row;
+    }
+    .community-contents {
+        /*    width: 40%; */
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    .community-img {
+        width: 80px;
+        height: 80px;
+        margin-right: 0.5rem;
+    }
+
+    .community-item {
+        margin-top: 30px;
     }
 `;
 
@@ -97,16 +125,25 @@ user: */
             <ChallengeBlock>
                 {challengeList &&
                     challengeList.map(({ _source }, i) => {
+                        const imgurl = JSON.parse(_source.main_img).url;
                         return (
-                            <div key={i}>
-                                <h1>{_source.title}</h1>
-                                <p className="contents">{_source.contents}</p>
-                                <p className="tags">
-                                    {_source.hashtag
-                                        .split(',')
-                                        .map((a) => `#${a.trim()}`)
-                                        .join(',')}
-                                </p>
+                            <div className="community-block" key={i}>
+                                <img
+                                    src={imgurl}
+                                    className="community-img community-item"
+                                />
+                                <div className="community-contents community-item">
+                                    <h1 className="title">{_source.title}</h1>
+                                    {/* <p className="contents">
+                                        {_source.contents}
+                                    </p> */}
+                                    <p className="tags">
+                                        {_source.hashtag
+                                            .split(',')
+                                            .map((a) => `#${a.trim()}`)
+                                            .join(',')}
+                                    </p>
+                                </div>
                             </div>
                         );
                     })}
