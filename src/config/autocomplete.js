@@ -4,11 +4,11 @@ import {
     distinctUntilChanged,
     map,
     pluck,
-    filter,
     tap,
 } from 'rxjs/operators';
 import instance from '../api/reqApi';
 import * as R from 'ramda';
+import { BasicType, UserType } from './searchOfType';
 const makeautoCompletequery = (query) => {
     return {
         query: {
@@ -28,10 +28,6 @@ const makeautoCompletequery = (query) => {
         },
     };
 };
-
-const basicmatch = R.test(/^[a-zA-Z]/);
-const usermatch = R.test(/^[@]/);
-const hashtagmatch = R.test(/^[#]/);
 
 const basicAutoGetter = R.path(['aggregations', 'dedup', 'buckets']);
 const userAutoGetter = R.path(['hits', 'hits']);
@@ -74,8 +70,7 @@ dedup:
 buckets */
 
 export const autocompletebasic$ = (query) => {
-    return of(query).pipe(
-        filter(basicmatch),
+    return BasicType(query).pipe(
         mergeMap((query$) =>
             from(
                 instance.post(AUTOCOMPLETEURLBASIC, {
@@ -91,8 +86,7 @@ export const AUTOCOMPLETEURLUSER =
     'https://search-testdomain-ishym4337emgkq75ryklxvupt4.us-west-2.es.amazonaws.com/docs_user/_search/template?pretty=true';
 
 export const autocompleteuser$ = (query) => {
-    return of(query).pipe(
-        filter(usermatch),
+    return UserType(query).pipe(
         mergeMap((query$) =>
             from(
                 instance.post(AUTOCOMPLETEURLUSER, {

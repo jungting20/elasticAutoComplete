@@ -42,8 +42,7 @@ const SearchInput = ({ submit, focus, close }) => {
                 debounceTime(500),
                 mapTo(newInputValue),
                 distinctUntilChanged(),
-                switchMap(getAutoWordList),
-                tap((a) => console.log(a, '셋세세'))
+                switchMap(getAutoWordList)
                 /* map((title) => {
                     return {
                         title: title.replace(/(<([^>]+)>)/gi, ''),
@@ -73,9 +72,10 @@ const SearchInput = ({ submit, focus, close }) => {
                 inputValue={inputValue}
                 onKeyUp={keyup}
                 renderOption={(option, { inputValue }) => {
-                    console.log(option, 'asdasdsadsa');
-                    const aaaa = inputValue.replace('@', '');
-                    const matches = match(option.title, aaaa);
+                    const matches = match(
+                        option.title,
+                        inputValue.replace('@', '')
+                    );
                     const parts = parse(option.title, matches);
 
                     return (

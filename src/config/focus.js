@@ -20,20 +20,17 @@ const getchallenge = () => {
 export const getrecommendArtits$ = () =>
     from(getrecommendArtits()).pipe(
         pluck('data'),
-        map((a) => a.hits.hits),
-        tap(console.log)
+        map((a) => a.hits.hits)
     );
 
 export const gethashtag$ = () =>
     from(gethashtag()).pipe(
         pluck('data'),
-        map((a) => a.aggregations.popular_hashtag.buckets),
-        tap(console.log)
+        map((a) => a.aggregations.popular_hashtag.buckets)
     );
 
 export const getchallenge$ = () =>
     from(getchallenge()).pipe(
         pluck('data'),
-        map((a) => a.hits.hits),
-        tap(console.log)
+        map((a) => a.hits.hits)
     );

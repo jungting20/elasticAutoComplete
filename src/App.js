@@ -5,26 +5,18 @@ import styled from 'styled-components';
 import SearchInput from './component/SearchInput';
 import PopularWordList from './component/PopularWordList';
 import { of, forkJoin } from 'rxjs';
-import {
-    mapTo,
-    filter,
-    switchMap,
-    delayWhen,
-    withLatestFrom,
-} from 'rxjs/operators';
-
+import { mapTo, filter, switchMap } from 'rxjs/operators';
 import * as R from 'ramda';
-import {
-    insertpoplarSearchRes$,
-    getSearchResult$,
-    popularSearchRes$,
-} from './config/searchResult';
+import { getSearchResult } from './config/searchResult';
+import { popularSearchRes$ } from './config/basicSearch';
 import {
     getrecommendArtits$,
     gethashtag$,
     getchallenge$,
 } from './config/focus';
 import FocusComponent from './component/Focus';
+import { isBasic, isUser } from './config/searchOfType';
+import UserSearchResult from './component/UserSearchResult';
 const AppLayout = styled.div`
     display: flex;
     flex-direction: column;
@@ -33,26 +25,46 @@ const AppLayout = styled.div`
     height: 100vh;
 `;
 
-const notisempty = R.pipe(R.isEmpty, R.not);
+const isNotEmpty = R.pipe(R.isEmpty, R.not);
 
 function App() {
     const [searchResult, setsearchResult] = useState([]);
     const [popularWordList, setpopularWordList] = useState([]);
     const [focusdata, setfocusdata] = useState({});
+    const [userList, setuserList] = useState([]);
 
     const submit = (e, value) => {
         of(e)
             .pipe(
                 filter((e) => e.keyCode === 13),
                 mapTo(value),
-                delayWhen(insertpoplarSearchRes$),
-                switchMap(getSearchResult$),
-                withLatestFrom(popularSearchRes$)
+                switchMap(getSearchResult)
             )
-            .subscribe(([searchresult, newpopularWordlist]) => {
-                setsearchResult(searchresult);
-                setpopularWordList(newpopularWordlist);
-                setfocusdata({});
+            .subscribe((a) => {
+                const setresult = R.cond([
+                    [
+                        isBasic,
+                        (value) => {
+                            const [
+                                searchresult,
+                                newpopularWordlist,
+                            ] = value.value;
+                            setsearchResult(searchresult);
+                            setpopularWordList(newpopularWordlist);
+                            setfocusdata({});
+                        },
+                    ],
+                    [
+                        isUser,
+                        (value) => {
+                            //console.log(value, 'asdsadasdsad');
+                            setuserList(value.value);
+                            setfocusdata({});
+                        },
+                    ],
+                ]);
+
+                setresult(a);
             });
     };
 
@@ -82,10 +94,10 @@ function App() {
             <PopularWordList popularWordList={popularWordList} />
             <SearchInput submit={submit} focus={focus} close={close} />
             <FocusComponent focusItem={focusdata} />
-            {notisempty(searchResult) && (
+            {isNotEmpty(searchResult) && (
                 <TotalSearchInfoCompoent searchResult={searchResult} />
             )}
-            ;
+            {isNotEmpty(userList) && <UserSearchResult userList={userList} />};
         </AppLayout>
     );
 }
