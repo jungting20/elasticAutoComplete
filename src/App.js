@@ -12,6 +12,8 @@ import {
     delayWhen,
     withLatestFrom,
 } from 'rxjs/operators';
+
+import * as R from 'ramda';
 import {
     insertpoplarSearchRes$,
     getSearchResult$,
@@ -30,6 +32,8 @@ const AppLayout = styled.div`
     align-items: center;
     height: 100vh;
 `;
+
+const notisempty = R.pipe(R.isEmpty, R.not);
 
 function App() {
     const [searchResult, setsearchResult] = useState([]);
@@ -73,13 +77,15 @@ function App() {
     useEffect(() => {
         popularSearchRes$.subscribe((newpop) => setpopularWordList(newpop));
     }, []);
-
     return (
         <AppLayout>
             <PopularWordList popularWordList={popularWordList} />
             <SearchInput submit={submit} focus={focus} close={close} />
             <FocusComponent focusItem={focusdata} />
-            <TotalSearchInfoCompoent searchResult={searchResult} />;
+            {notisempty(searchResult) && (
+                <TotalSearchInfoCompoent searchResult={searchResult} />
+            )}
+            ;
         </AppLayout>
     );
 }

@@ -1,6 +1,7 @@
 import { from, of } from 'rxjs';
 import instance from '../api/reqApi';
-import { catchError, map, pluck, mergeMap, toArray } from 'rxjs/operators';
+import { tap, catchError, map, pluck, mergeMap, toArray } from 'rxjs/operators';
+import { groupBy } from 'ramda';
 const searchRes = (query) => {
     return instance.post('/_msearch/template?pretty=true', query);
 };
@@ -35,6 +36,9 @@ const partition = (keyfn, array) => {
         [[], []]
     );
 };
+const grouppingdocs = groupBy(
+    (a) => `${a._index}${a._source.type ? '-' + a._source.type : ''}`
+);
 
 const flatten = (array) => array.reduce((a, b) => a.concat(...b), []);
 
@@ -60,6 +64,8 @@ export const getSearchResult$ = (query) => {
         mergeMap((a) => from(a).pipe(map(({ hits }) => hits.hits))),
         toArray(),
         map(flatten),
-        map((a) => partition((b) => b._index === 'artists', a))
+        tap(console.log),
+        map((a) => partition((b) => b._index === 'artists', a)),
+        map(([a, b]) => [a, grouppingdocs(b)])
     );
 };

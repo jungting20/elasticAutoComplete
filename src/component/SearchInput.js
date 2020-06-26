@@ -43,16 +43,16 @@ const SearchInput = ({ submit, focus, close }) => {
                 mapTo(newInputValue),
                 distinctUntilChanged(),
                 switchMap(getAutoWordList),
-                map((title) => {
+                tap((a) => console.log(a, '셋세세'))
+                /* map((title) => {
                     return {
                         title: title.replace(/(<([^>]+)>)/gi, ''),
                     };
                 }),
-                toArray()
+                toArray() */
             )
             .subscribe(setoption);
     };
-
     return (
         <SerachInputBlock>
             <Autocomplete
@@ -73,7 +73,9 @@ const SearchInput = ({ submit, focus, close }) => {
                 inputValue={inputValue}
                 onKeyUp={keyup}
                 renderOption={(option, { inputValue }) => {
-                    const matches = match(option.title, inputValue);
+                    console.log(option, 'asdasdsadsa');
+                    const aaaa = inputValue.replace('@', '');
+                    const matches = match(option.title, aaaa);
                     const parts = parse(option.title, matches);
 
                     return (
@@ -86,7 +88,7 @@ const SearchInput = ({ submit, focus, close }) => {
                                         color: part.highlight ? 'red' : '',
                                     }}
                                 >
-                                    {part.text}
+                                    {part.text.replace('@', '')}
                                 </span>
                             ))}
                         </div>

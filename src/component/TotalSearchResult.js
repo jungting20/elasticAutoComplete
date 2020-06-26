@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-
 const TotalSearchInfoBlock = styled.div`
     display: flex;
     justify-content: space-between;
@@ -13,14 +12,14 @@ const TotalSearchInfoBlock = styled.div`
 const SearchResultUl = styled.ul`
     display: flex;
     flex-direction: column;
-    width: 50vw;
+    width: 80vw;
     li {
         display: flex;
         margin-bottom: 19px;
     }
     li > img {
-        width: 100px;
-        height: 100px;
+        width: 80px;
+        height: 80px;
         margin-right: 10px;
     }
     .infomation {
@@ -29,12 +28,30 @@ const SearchResultUl = styled.ul`
         justify-content: space-between;
     }
 
+    .infomation > p {
+        font-size: 12px;
+        max-width: 768px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* 라인수 */
+        -webkit-box-orient: vertical;
+        word-wrap: break-word;
+        line-height: 1.2em;
+        height: 3.6em;
+    }
+
     .sub-infomation {
         margin-bottom: 10px;
     }
 
     .infomation span {
         font-size: 10px;
+    }
+
+    & > div > h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
     }
 `;
 
@@ -46,12 +63,16 @@ const TotalArtistInfoBlock = styled.div`
 const ArtistsInfoBlock = styled.div`
     display: flex;
     margin-bottom: 30px;
-    flex-direction: column;
+    /* flex-direction: column; */
     .album-info {
         display: flex;
         flex-direction: column;
         justify-content: center;
         margin-left: 10px;
+    }
+    img {
+        width: 80px;
+        height: 80px;
     }
 `;
 
@@ -62,7 +83,7 @@ const ArtistsInfoComponent = ({
 }) => {
     return (
         <ArtistsInfoBlock>
-            <div>
+            <div className="human-info">
                 <p>인물정보</p>
                 <figure>
                     <img src={profile_img} />
@@ -84,7 +105,7 @@ const ArtistsInfoComponent = ({
 //main_img, title, artists, cp, create_ts, hashtag
 const SearchResult = ({ searchResult }) => {
     const [artists, docs] = searchResult;
-
+    const keys = Object.keys(docs);
     return (
         <TotalArtistInfoBlock>
             {artists &&
@@ -92,37 +113,48 @@ const SearchResult = ({ searchResult }) => {
                     <ArtistsInfoComponent info={a} key={index} />
                 ))}
             <SearchResultUl>
-                {docs &&
-                    docs.map(
-                        (
-                            {
-                                _source: {
-                                    main_img,
-                                    title,
-                                    artists,
-                                    cp,
-                                    create_ts,
-                                    hashtag,
-                                },
-                            },
-                            index
-                        ) => {
-                            const { url, width, height } = JSON.parse(main_img);
-                            return (
-                                <li key={index}>
-                                    <img src={url} />
-                                    <div className="infomation">
-                                        <p>{title}</p>
-                                        <div className="sub-infomation">
-                                            <span>{`${artists}    ,`}</span>
-                                            <span>{`${cp}   ,`}</span>
-                                            <span>{`${create_ts}    ,`}</span>
-                                        </div>
-                                    </div>
-                                </li>
-                            );
-                        }
-                    )}
+                {keys &&
+                    keys.map((key, index) => (
+                        <div key={index}>
+                            <h2>{key}</h2>
+                            {docs[key] &&
+                                docs[key].map(
+                                    (
+                                        {
+                                            _source: {
+                                                type,
+                                                main_img,
+                                                title,
+                                                artists,
+                                                cp,
+                                                create_ts,
+                                                hashtag,
+                                            },
+                                        },
+                                        index
+                                    ) => {
+                                        const {
+                                            url,
+                                            width,
+                                            height,
+                                        } = JSON.parse(main_img);
+                                        return (
+                                            <li key={index}>
+                                                <img src={url} />
+                                                <div className="infomation">
+                                                    <p>{title}</p>
+                                                    <div className="sub-infomation">
+                                                        <span>{`${artists}    ,`}</span>
+                                                        <span>{`${cp}   ,`}</span>
+                                                        <span>{`${create_ts}    ,`}</span>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        );
+                                    }
+                                )}
+                        </div>
+                    ))}
             </SearchResultUl>
         </TotalArtistInfoBlock>
     );
