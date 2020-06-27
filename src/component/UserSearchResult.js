@@ -4,6 +4,9 @@ import styled from 'styled-components';
 const UserSearchResultBlock = styled.ul`
     display: flex;
     flex-direction: column;
+    width: 55vw;
+    margin-top: 1rem;
+    font-size: 2rem;
 `;
 
 const UserSearchResult = ({ userList }) => {

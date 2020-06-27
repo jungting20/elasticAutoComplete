@@ -1,15 +1,10 @@
 import { from, merge, of } from 'rxjs';
-import {
-    mergeMap,
-    distinctUntilChanged,
-    map,
-    pluck,
-    tap,
-} from 'rxjs/operators';
+import { mergeMap, map, pluck, tap } from 'rxjs/operators';
 import instance from '../api/reqApi';
 import * as R from 'ramda';
 import { BasicType, UserType } from './searchOfType';
-const makeautoCompletequery = (query) => {
+
+/* const makeautoCompletequery = (query) => {
     return {
         query: {
             match: {
@@ -27,18 +22,33 @@ const makeautoCompletequery = (query) => {
             },
         },
     };
+}; */
+
+const BasicAutoObject = {
+    url: '/search_keyword/_search/template?pretty=true',
+    template: (query) => ({
+        id: 'autocomplete_template',
+        params: { autocomplete_query: query },
+    }),
+    gethits: R.path(['aggregations', 'dedup', 'buckets']),
 };
 
-const basicAutoGetter = R.path(['aggregations', 'dedup', 'buckets']);
-const userAutoGetter = R.path(['hits', 'hits']);
+const UserAutoObject = {
+    url: '/docs_user/_search/template?pretty=true',
+    template: (query) => ({
+        id: 'user_autocomplete_template',
+        params: { user_autocomplete: query.replace('@', '') },
+    }),
+    gethits: R.path(['hits', 'hits']),
+};
 
 const basicAuto = R.pipe(
-    basicAutoGetter,
+    BasicAutoObject.gethits,
     R.map((a) => ({ title: a.key }))
 );
 
 const userAuto = R.pipe(
-    userAutoGetter,
+    UserAutoObject.gethits,
     R.map((a) => ({ title: `@${a._source.first_name}` }))
 );
 
@@ -62,9 +72,6 @@ export const autocompletebasic$ = (query) => {
 
  */
 
-export const AUTOCOMPLETEURLBASIC =
-    'https://search-testdomain-ishym4337emgkq75ryklxvupt4.us-west-2.es.amazonaws.com/search_keyword/_search/template?pretty=true';
-
 /* aggregations:
 dedup:
 buckets */
@@ -73,26 +80,23 @@ export const autocompletebasic$ = (query) => {
     return BasicType(query).pipe(
         mergeMap((query$) =>
             from(
-                instance.post(AUTOCOMPLETEURLBASIC, {
-                    id: 'autocomplete_template',
-                    params: { autocomplete_query: query$ },
-                })
+                instance.post(
+                    BasicAutoObject.url,
+                    BasicAutoObject.template(query$)
+                )
             ).pipe(pluck('data'), map(basicAuto))
         )
     );
 };
 
-export const AUTOCOMPLETEURLUSER =
-    'https://search-testdomain-ishym4337emgkq75ryklxvupt4.us-west-2.es.amazonaws.com/docs_user/_search/template?pretty=true';
-
 export const autocompleteuser$ = (query) => {
     return UserType(query).pipe(
         mergeMap((query$) =>
             from(
-                instance.post(AUTOCOMPLETEURLUSER, {
-                    id: 'user_autocomplete_template',
-                    params: { user_autocomplete: query$.replace('@', '') },
-                })
+                instance.post(
+                    UserAutoObject.url,
+                    UserAutoObject.template(query$)
+                )
             ).pipe(pluck('data'), map(userAuto))
         )
     );

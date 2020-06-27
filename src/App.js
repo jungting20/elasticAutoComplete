@@ -17,6 +17,7 @@ import {
 import FocusComponent from './component/Focus';
 import { isBasic, isUser } from './config/searchOfType';
 import UserSearchResult from './component/UserSearchResult';
+
 const AppLayout = styled.div`
     display: flex;
     flex-direction: column;
@@ -32,7 +33,6 @@ function App() {
     const [popularWordList, setpopularWordList] = useState([]);
     const [focusdata, setfocusdata] = useState({});
     const [userList, setuserList] = useState([]);
-
     const submit = (e, value) => {
         of(e)
             .pipe(
@@ -93,11 +93,21 @@ function App() {
         <AppLayout>
             <PopularWordList popularWordList={popularWordList} />
             <SearchInput submit={submit} focus={focus} close={close} />
-            <FocusComponent focusItem={focusdata} />
-            {isNotEmpty(searchResult) && (
-                <TotalSearchInfoCompoent searchResult={searchResult} />
+            {isNotEmpty(focusdata) ? (
+                <FocusComponent focusItem={focusdata} />
+            ) : (
+                <></>
             )}
-            {isNotEmpty(userList) && <UserSearchResult userList={userList} />};
+            {isNotEmpty(searchResult) ? (
+                <TotalSearchInfoCompoent searchResult={searchResult} />
+            ) : (
+                <></>
+            )}
+            {isNotEmpty(userList) ? (
+                <UserSearchResult userList={userList} />
+            ) : (
+                <></>
+            )}
         </AppLayout>
     );
 }
