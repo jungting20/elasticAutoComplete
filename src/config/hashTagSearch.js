@@ -2,6 +2,7 @@ import { from, of, merge } from 'rxjs';
 import instance from '../api/reqApi';
 import { pluck, mergeMap, delayWhen, map, tap } from 'rxjs/operators';
 import { HashTagType } from './searchOfType';
+import * as R from 'ramda';
 
 export const HashTagSearchObject = {
     url: '/hashtag/_search/template?pretty=true',
@@ -9,7 +10,7 @@ export const HashTagSearchObject = {
         id: 'hashtag_search_template',
         params: { search_hashtag: query.replace('#', '') },
     }),
-    gethits: (a) => a.aggregations.aggs_hashtag.buckets,
+    gethits: R.path(['aggregations', 'aggs_hashtag', 'buckets']),
 };
 
 export const getHashTagList$ = (query) => {

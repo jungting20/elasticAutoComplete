@@ -118,7 +118,7 @@ const SearchResult = ({ searchResult }) => {
                     keys.map((key, index) => (
                         <div key={index}>
                             <h2>
-                                {(key.includes('-') && index == 0) ||
+                                {(key.includes('-') && index === 0) ||
                                 !key.includes('-')
                                     ? key.replace(/-.+/, '')
                                     : ''}
