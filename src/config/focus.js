@@ -8,7 +8,7 @@ const getrecommendArtits = () => {
     });
 };
 const gethashtag = () => {
-    return instance.post('/community/_search/template?pretty=true', {
+    return instance.post('/hashtag/_search/template?pretty=true', {
         id: 'hashtag_template',
     });
 };

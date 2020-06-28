@@ -1,7 +1,6 @@
 import { from, of, merge } from 'rxjs';
 import instance from '../api/reqApi';
 import { pluck, mergeMap, delayWhen, map, tap } from 'rxjs/operators';
-import * as R from 'ramda';
 import { UserType } from './searchOfType';
 
 const UserSearchObject = {

@@ -15,8 +15,9 @@ import {
     getchallenge$,
 } from './config/focus';
 import FocusComponent from './component/Focus';
-import { isBasic, isUser } from './config/searchOfType';
+import { isBasic, isUser, isHashtag } from './config/searchOfType';
 import UserSearchResult from './component/UserSearchResult';
+import HashTagSearchResult from './component/HashTagSearchResult';
 
 const AppLayout = styled.div`
     display: flex;
@@ -33,6 +34,7 @@ function App() {
     const [popularWordList, setpopularWordList] = useState([]);
     const [focusdata, setfocusdata] = useState({});
     const [userList, setuserList] = useState([]);
+    const [hashtagList, sethashtagList] = useState([]);
     const submit = (e, value) => {
         of(e)
             .pipe(
@@ -59,6 +61,13 @@ function App() {
                         (value) => {
                             //console.log(value, 'asdsadasdsad');
                             setuserList(value.value);
+                            setfocusdata({});
+                        },
+                    ],
+                    [
+                        isHashtag,
+                        (value) => {
+                            sethashtagList(value.value);
                             setfocusdata({});
                         },
                     ],
@@ -105,6 +114,11 @@ function App() {
             )}
             {isNotEmpty(userList) ? (
                 <UserSearchResult userList={userList} />
+            ) : (
+                <></>
+            )}
+            {isNotEmpty(hashtagList) ? (
+                <HashTagSearchResult hashtagList={hashtagList} />
             ) : (
                 <></>
             )}

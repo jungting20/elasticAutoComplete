@@ -10,7 +10,6 @@ const UserSearchResultBlock = styled.ul`
 `;
 
 const UserSearchResult = ({ userList }) => {
-    console.log(userList);
     return (
         <UserSearchResultBlock>
             {userList.map((user) => (

@@ -88,7 +88,7 @@ const SearchInput = ({ submit, focus, close }) => {
                                         color: part.highlight ? 'red' : '',
                                     }}
                                 >
-                                    {part.text.replace('@', '')}
+                                    {part.text.replace(/[@#]/, '')}
                                 </span>
                             ))}
                         </div>

@@ -106,6 +106,7 @@ const ArtistsInfoComponent = ({
 const SearchResult = ({ searchResult }) => {
     const [artists, docs] = searchResult;
     const keys = Object.keys(docs);
+    console.log(docs);
     return (
         <TotalArtistInfoBlock>
             {artists &&
@@ -116,7 +117,13 @@ const SearchResult = ({ searchResult }) => {
                 {keys &&
                     keys.map((key, index) => (
                         <div key={index}>
-                            <h2>{key}</h2>
+                            <h2>
+                                {(key.includes('-') && index == 0) ||
+                                !key.includes('-')
+                                    ? key.replace(/-.+/, '')
+                                    : ''}
+                            </h2>
+                            <hr />
                             {docs[key] &&
                                 docs[key].map(
                                     (
