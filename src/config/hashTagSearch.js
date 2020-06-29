@@ -24,15 +24,13 @@ export const getHashTagList$ = (query) => {
             )
         ),
         pluck('data'),
-        map(HashTagSearchObject.gethits),
-        tap(console.log)
+        map(HashTagSearchObject.gethits)
     );
 };
 
 const getSearchResultHashTag$ = (query) => {
     return getHashTagList$(query).pipe(
-        map((a) => ({ type: 'hashtag', value: a })),
-        tap(console.log)
+        map((a) => ({ type: 'hashtag', value: a }))
     );
 };
 

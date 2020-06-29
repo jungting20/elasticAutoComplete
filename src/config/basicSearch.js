@@ -96,8 +96,7 @@ const getSearchResult$ = (query) => {
         map(flatMapAndPartition),
         map(([a, b]) => [a, grouppingdocs(b)]),
         withLatestFrom(popularSearchRes$),
-        map((a) => ({ type: 'basic', value: a })),
-        tap(console.log)
+        map((a) => ({ type: 'basic', value: a }))
     );
 };
 

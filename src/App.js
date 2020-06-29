@@ -83,7 +83,6 @@ function App() {
             gethashtag$(),
             getchallenge$()
         ).subscribe(([artists, hashtag, challenge]) => {
-            console.log(artists);
             setfocusdata({
                 artists,
                 hashtag,
