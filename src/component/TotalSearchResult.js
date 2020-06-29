@@ -1,10 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
+import { parseJSON, isjson } from '../config/basicSearch';
 const TotalSearchInfoBlock = styled.div`
     display: flex;
     justify-content: space-between;
     width: 70vw;
     height: 70vh;
+    .featured-h2 {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    .featured {
+        display: flex;
+        img {
+            width: 80px;
+            height: 80px;
+            margin-right: 10px;
+        }
+    }
 `;
 
 //Popular search
@@ -74,21 +87,41 @@ const ArtistsInfoBlock = styled.div`
         width: 80px;
         height: 80px;
     }
+    .member-info {
+        display: flex;
+        font-size: 5px;
+        img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+    }
 `;
 
 const ArtistsInfoComponent = ({
     info: {
-        _source: { album, main_img, name, type, profile_img },
+        _source: { album, main_img, name, type, profile_img, members },
     },
 }) => {
     return (
         <ArtistsInfoBlock>
             <div className="human-info">
-                <p>인물정보</p>
+                <p>artist</p>
                 <figure>
                     <img src={profile_img} />
                     <figcaption>{name}</figcaption>
                 </figure>
+                <ul className="member-info">
+                    {members &&
+                        members.map((m, index) => (
+                            <li key={index}>
+                                <figure>
+                                    <img src={m.img} />
+                                    <figcaption>{m.name}</figcaption>
+                                </figure>
+                            </li>
+                        ))}
+                </ul>
             </div>
             <div className="album-info">
                 <p>앨범정보</p>
@@ -105,14 +138,25 @@ const ArtistsInfoComponent = ({
 //main_img, title, artists, cp, create_ts, hashtag
 const SearchResult = ({ searchResult }) => {
     const [artists, docs] = searchResult;
-    const keys = Object.keys(docs);
-    console.log(docs);
+    console.log(artists);
+
+    const keys = Object.keys(docs).filter((a) => a !== 'featured');
+    const featured = docs['featured'];
     return (
         <TotalArtistInfoBlock>
             {artists &&
                 artists.map((a, index) => (
                     <ArtistsInfoComponent info={a} key={index} />
                 ))}
+            <h2 className="featured-h2">featured</h2>
+            <ul className="featured">
+                {featured &&
+                    featured.map((f, index) => (
+                        <li key={index}>
+                            <img src={f._source.main_img} />
+                        </li>
+                    ))}
+            </ul>
             <SearchResultUl>
                 {keys &&
                     keys.map((key, index) => (
@@ -140,11 +184,15 @@ const SearchResult = ({ searchResult }) => {
                                         },
                                         index
                                     ) => {
-                                        const {
-                                            url,
-                                            width,
-                                            height,
-                                        } = JSON.parse(main_img);
+                                        // const {
+                                        //     url,
+                                        //     width,
+                                        //     height,
+                                        // } = JSON.parse(main_img);
+
+                                        const url = isjson(main_img)
+                                            ? JSON.parse(main_img).url
+                                            : main_img;
                                         return (
                                             <li key={index}>
                                                 <img src={url} />

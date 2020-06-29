@@ -1,8 +1,9 @@
 import { from, of } from 'rxjs';
 import instance from '../api/reqApi';
 import { catchError, map, pluck, tap } from 'rxjs/operators';
-
+// aggregations.popular_artists.buckets
 const getrecommendArtits = () => {
+    // return instance.post('/docs_user/_search/template?pretty=true', {
     return instance.post('/artists/_search/template?pretty=true', {
         id: 'artist_template',
     });
@@ -20,6 +21,7 @@ const getchallenge = () => {
 export const getrecommendArtits$ = () =>
     from(getrecommendArtits()).pipe(
         pluck('data'),
+        tap(console.log),
         map((a) => a.hits.hits)
     );
 
