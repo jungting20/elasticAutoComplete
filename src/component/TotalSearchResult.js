@@ -138,7 +138,6 @@ const ArtistsInfoComponent = ({
 //main_img, title, artists, cp, create_ts, hashtag
 const SearchResult = ({ searchResult }) => {
     const [artists, docs] = searchResult;
-    console.log(artists);
 
     const keys = Object.keys(docs).filter((a) => a !== 'featured');
     const featured = docs['featured'];

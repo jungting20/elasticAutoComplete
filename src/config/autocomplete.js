@@ -31,7 +31,7 @@ const BasicAutoObject = {
         id: 'autocomplete_template',
         params: { autocomplete_query: query },
     }),
-    gethits: R.path(['aggregations', 'dedup', 'buckets']),
+    gethits: R.path(['aggregations', 'aggs_keyword', 'buckets']),
 };
 
 const UserAutoObject = {

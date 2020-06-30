@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-
+import * as R from 'ramda';
 const FocusBlock = styled.div`
     width: 100%;
     height: 50vh;
@@ -93,6 +93,12 @@ const ChallengeBlock = styled.ul`
     }
 `;
 
+const recommendgetter = R.pipe(
+    R.path(['hits', 'hits']),
+    R.map((a) => a._source.profile_img),
+    R.flatten
+);
+
 const FocusComponent = ({ focusItem }) => {
     const recommendList = focusItem.artists;
     const hashtagList = focusItem.hashtag;
@@ -109,11 +115,11 @@ user: */
         <FocusBlock>
             <RecommendArtistsBlock>
                 {recommendList &&
-                    recommendList.map(({ _source }, i) => {
+                    recommendList.map(({ key, profile_img }, i) => {
                         return (
                             <li key={i}>
-                                <img src={_source.main_img} />
-                                <p>{_source.name}</p>
+                                <img src={recommendgetter(profile_img)} />
+                                <p>{key}</p>
                             </li>
                         );
                     })}
